@@ -38,7 +38,7 @@
     
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <title>Hive</title>
         <style>
@@ -153,7 +153,12 @@
             <select name="to">
                 <?php
                     foreach ($to as $pos) {
+                        if (array_sum($hand[$player]) == 11) {
+                            echo "<option value=\"$pos\">$pos</option>";
+                        }
+                        else if (neighboursAreSameColor($player, $pos, $board) == true && !(isset($board[$pos]))) {
                         echo "<option value=\"$pos\">$pos</option>";
+                        }
                     }
                 ?>
             </select>
@@ -172,12 +177,7 @@
             <select name="to">
                 <?php
                     foreach ($to as $pos) {
-                        if (array_sum($hand[$player]) == 11) {
-                            echo "<option value=\"$pos\">$pos</option>";
-                        }
-                        else if (neighboursAreSameColor($player, $pos, $board) == true && !(isset($board[$pos]))) {
                         echo "<option value=\"$pos\">$pos</option>";
-                        }
                     }
                 ?>
             </select>
@@ -197,7 +197,7 @@
         <strong><?php if (isset($_SESSION['error'])) echo($_SESSION['error']); unset($_SESSION['error']); ?></strong>
         <ol>
             <?php
-                $db = include 'database.php';
+                $db = include_once 'database.php';
                 $stmt = $db->prepare('SELECT * FROM moves WHERE game_id = '.$_SESSION['game_id']);
                 $stmt->execute();
                 $result = $stmt->get_result();
@@ -211,4 +211,3 @@
         </form>
     </body>
 </html>
-

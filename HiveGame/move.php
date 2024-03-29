@@ -38,6 +38,7 @@ else {
                 }
             }
         }
+
         if ($all) {
             $_SESSION['error'] = "Move would split hive";
         } else {
@@ -58,10 +59,14 @@ else {
                 }
             }
             elseif ($tile[1] == "S") {
-                if (!validSpider($board, $from, $to)) {
-                    $_SESSION['error'] = 'Invalid move for Spider';
+                $fromExploded2 = explode(',', $from);
+                $toExploded2 = explode(',', $to);
+
+                $pathscheck = findAllPaths($board, $fromExploded2, $toExploded2);
+                if (empty($pathscheck)) {
+                    $_SESSION['error'] = 'Unvalid move for Spider'; 
                 }
-            }
+            }     
         }
     }
     if (isset($_SESSION['error'])) {
@@ -71,7 +76,7 @@ else {
         if (isset($board[$to])) array_push($board[$to], $tile);
         else $board[$to] = [$tile];
         $_SESSION['player'] = 1 - $_SESSION['player'];
-        $db = include 'database.php';
+        $db = include_once 'database.php';
         $stmt = $db->prepare('insert into moves (game_id, type, move_from, move_to, previous_id, state) values (?, "move", ?, ?, ?, ?)');
         $stmt->bind_param('issis', $_SESSION['game_id'], $from, $to, $_SESSION['last_move'], get_state());
         $stmt->execute();
@@ -82,5 +87,3 @@ else {
 }
 
 header('Location: index.php');
-
-?>

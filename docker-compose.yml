@@ -29,5 +29,12 @@ services:
     networks:
       - my_network
 
+  app-ai:
+    build:
+      context: .
+      dockerfile: Dockerfile.Al
+    ports:
+      - "5000:5000"
+
 networks:
   my_network:
