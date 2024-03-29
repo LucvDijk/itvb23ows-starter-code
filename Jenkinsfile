@@ -41,6 +41,7 @@ pipeline {
                     bat 'php HiveGame/Tests/IsQueenPlaced.php' 
                     bat 'php HiveGame/Tests/QueenMoveTest.php' 
                     bat 'php HiveGame/Tests/MovinPiecesTest.php'
+                    bat 'php HiveGame/Tests/PassTest.php'
                 }
             }
         }
