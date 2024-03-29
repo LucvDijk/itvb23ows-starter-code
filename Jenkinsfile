@@ -1,41 +1,50 @@
 pipeline {
     agent any
 
+    environment {
+        // Definieer de locatie eenmaal bovenaan de pipeline
+        WORK_DIR = 'C:\\Users\\Luc\\Documents\\hanze-ICT\\Ontwikkelstraten\\itvb23ows-starter-code'
+    }
+
     stages {
         stage('Build') {
             steps {
-                script {
-                    // Use the Docker image with PHP and Apache
-                    docker.image('php:7.4-apache').inside('-u root') {
-                        // Install required dependencies
-                        sh 'apt-get update -y && apt-get install -y libmariadb-dev'
-
-                        // Build the PHP application
-                        sh 'docker-php-ext-install mysqli pdo pdo_mysql'
-                        sh 'chmod -R 755 /var/www/html'
-                    }
+                echo 'Building the PHP application'
+                dir(WORK_DIR) {
+                    bat 'docker-compose build'
+                    // Voeg hier stappen toe om je applicatie te bouwen (bijvoorbeeld composer install)
                 }
             }
         }
 
         stage('Test') {
             steps {
-                script {
-                    // Run your tests here
-                    // You may need to adjust this based on your testing framework
-                    // For example: sh 'phpunit'
+                echo 'Running tests'
+                dir(WORK_DIR) {
+                    bat 'php --version'
+                    // Voeg hier stappen toe om je tests uit te voeren (bijvoorbeeld phpunit)
                 }
             }
         }
 
         stage('Deploy') {
             steps {
-                script {
-                    // Deploy your application here
-                    // You may need to copy files, restart services, etc.
-                    // For example: sh 'docker-compose up -d'
+                echo 'Deploying the PHP application'
+                dir(WORK_DIR) {
+                    bat 'docker-compose up -d'
+                    // Voeg hier stappen toe om je applicatie te implementeren (bijvoorbeeld Docker build en push)
                 }
             }
         }
     }
-}
+
+    post {
+        always {
+            // Opruimen na de pipeline is voltooid
+            script {
+                dir(WORK_DIR) {
+                    bat 'docker-compose down'
+                }
+            }
+        }
+    }
