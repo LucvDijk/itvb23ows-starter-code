@@ -2,17 +2,32 @@ pipeline {
     agent any
 
     environment {
-        // Definieer de locatie eenmaal bovenaan de pipeline
         WORK_DIR = 'C:\\Users\\Luc\\Documents\\hanze-ICT\\Ontwikkelstraten\\itvb23ows-starter-code'
     }
 
     stages {
-        stage('Build') {
+        stage('SCM') {
+            steps {
+                git branch: 'main', url: 'https://github.com/LucvDijk/itvb23ows-starter-code.git'
+            }
+        }
+
+        stage('SonarQube analysis') {
+            steps {
+                script {
+                    def scannerHome = tool 'hive-sonarqube'
+                    withSonarQubeEnv('hive-sonar') {
+                                        bat "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=hive"
+                    }
+                }
+            }
+        }
+
+            stage('Build') {
             steps {
                 echo 'Building the PHP application'
                 dir(WORK_DIR) {
                     bat 'docker-compose build'
-                    // Voeg hier stappen toe om je applicatie te bouwen (bijvoorbeeld composer install)
                 }
             }
         }
@@ -22,7 +37,12 @@ pipeline {
                 echo 'Running tests'
                 dir(WORK_DIR) {
                     bat 'php --version'
-                    // Voeg hier stappen toe om je tests uit te voeren (bijvoorbeeld phpunit)
+                    bat 'php HiveGame/Tests/DropdownTest.php'
+                    bat 'php HiveGame/Tests/IsQueenPlaced.php' 
+                    bat 'php HiveGame/Tests/MovinPiecesTest.php' 
+                    bat 'php HiveGame/Tests/PassTest.php' 
+                    bat 'php HiveGame/Tests/QueenMoveTest.php' 
+                    bat 'php HiveGame/Tests/WinTest.php' 
                 }
             }
         }
@@ -32,7 +52,6 @@ pipeline {
                 echo 'Deploying the PHP application'
                 dir(WORK_DIR) {
                     bat 'docker-compose up -d'
-                    // Voeg hier stappen toe om je applicatie te implementeren (bijvoorbeeld Docker build en push)
                 }
             }
         }
@@ -40,7 +59,6 @@ pipeline {
 
     post {
         always {
-            // Opruimen na de pipeline is voltooid
             script {
                 dir(WORK_DIR) {
                     bat 'docker-compose down'
@@ -48,3 +66,4 @@ pipeline {
             }
         }
     }
+}
