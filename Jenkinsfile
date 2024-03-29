@@ -39,6 +39,7 @@ pipeline {
                     bat 'php --version'
                     bat 'php HiveGame/Tests/DropdownTest.php'
                     bat 'php HiveGame/Tests/IsQueenPlaced.php' 
+                    bat 'php HiveGame/Tests/QueenMoveTest.php' 
                 }
             }
         }
