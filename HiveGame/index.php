@@ -128,7 +128,9 @@
             <select name="piece">
                 <?php
                     foreach ($hand[$player] as $tile => $ct) {
+                        if ($ct > 0) {
                         echo "<option value=\"$tile\">$tile</option>";
+                        }
                     }
                 ?>
             </select>
@@ -145,14 +147,21 @@
             <select name="from">
                 <?php
                     foreach (array_keys($board) as $pos) {
-                        echo "<option value=\"$pos\">$pos</option>";
+                        if ($board[$pos][0][0] == $player) {
+                            echo "<option value=\"$pos\">$pos</option>";
+                        }
                     }
                 ?>
             </select>
             <select name="to">
                 <?php
                     foreach ($to as $pos) {
+                        if (array_sum($hand[$player]) == 11) {
+                            echo "<option value=\"$pos\">$pos</option>";
+                        }
+                        else if (neighboursAreSameColor($player, $pos, $board) == true && !(isset($board[$pos]))) {
                         echo "<option value=\"$pos\">$pos</option>";
+                        }
                     }
                 ?>
             </select>
